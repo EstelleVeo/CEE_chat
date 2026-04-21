@@ -4,6 +4,7 @@ from langchain_mistralai import ChatMistralAI, MistralAIEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
+import chromadb.config
 
 # --- IMPORT INTELLIGENT DE LA MÉMOIRE ---
 try:
@@ -41,17 +42,31 @@ def get_chatbot():
         # LE CORRECTIF CRUCIAL : Forcer les IDs en chaînes de caractères
         ids = [str(i) for i in range(len(chunks))]
         
+    #     vector_db = Chroma.from_documents(
+    #         documents=chunks,
+    #         embedding=embeddings,
+    #         persist_directory=DB_PATH,
+    #         ids=ids
+    #     )
+    #     vector_db.persist()
+    #     st.success(f"✅ {len(chunks)} fragments indexés avec succès !")
+    # else:
+    #     # Si elle existe, on la charge simplement
+    #     vector_db = Chroma(persist_directory=DB_PATH, embedding_function=embeddings)
+
         vector_db = Chroma.from_documents(
             documents=chunks,
             embedding=embeddings,
             persist_directory=DB_PATH,
-            ids=ids
+            ids=ids,
+            client_settings=chromadb.config.Settings(anonymized_telemetry=False) # <--- AJOUTE ÇA
         )
-        vector_db.persist()
-        st.success(f"✅ {len(chunks)} fragments indexés avec succès !")
     else:
-        # Si elle existe, on la charge simplement
-        vector_db = Chroma(persist_directory=DB_PATH, embedding_function=embeddings)
+        vector_db = Chroma(
+            persist_directory=DB_PATH, 
+            embedding_function=embeddings,
+            client_settings=chromadb.config.Settings(anonymized_telemetry=False) # <--- ET ÇA
+        )
     
     llm = ChatMistralAI(model="mistral-small-latest", temperature=0)
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True, output_key="answer")
