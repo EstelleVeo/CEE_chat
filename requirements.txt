@@ -1,7 +1,7 @@
 streamlit
-langchain
-langchain-mistralai
-langchain-community
-chromadb
+langchain==0.1.20
+langchain-community==0.0.38
+langchain-mistralai==0.1.7
+chromadb==0.5.0
 pypdf
 python-dotenv
