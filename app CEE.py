@@ -4,8 +4,19 @@ from langchain_mistralai import ChatMistralAI, MistralAIEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
+
+# --- IMPORT INTELLIGENT DE LA MÉMOIRE ---
+try:
+    from langchain.memory import ConversationBufferMemory
+except ImportError:
+    from langchain_community.memory import ConversationBufferMemory
+
+# --- IMPORT INTELLIGENT DE LA CHAINE ---
+try:
+    from langchain.chains import ConversationalRetrievalChain
+except ImportError:
+    # Pour les versions très récentes (1.0+)
+    from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
 
 # --- 1. CONFIGURATION ---
 PDF_FOLDER = "./fiches_cee"
